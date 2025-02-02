@@ -1,0 +1,264 @@
+{
+	"info": {
+		"_postman_id": "8fc14116-0978-4b63-8324-cd4cf2562c02",
+		"name": "Geo-Spatial Data",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "40883533"
+	},
+	"item": [
+		{
+			"name": "Get Data from Location",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Returned data matches the limit\", function() {",
+							"    const response = pm.response.json();",
+							"    pm.expect(response.data.geoData.length).to.eql(1);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Pagination works correctly\", function() {",
+							"    const response = pm.response.json();",
+							"    const page = 1;",
+							"    const limit = 1;",
+							"",
+							"    const currentPage = parseInt(response.data.page, 10);",
+							"    console.log(currentPage);",
+							"    const dataLength = response.data.geoData.length; ",
+							"    console.log(dataLength);",
+							"",
+							"    pm.expect(currentPage).to.eql(page); ",
+							"    pm.expect(dataLength).to.eql(limit); ",
+							"});",
+							"",
+							"pm.test(\"Results are sorted in ascending order\", function() {",
+							"    const response = pm.response.json();",
+							"    pm.expect(response.data.geoData).to.be.an('array').that.is.not.empty;",
+							"    pm.expect(response.data.geoData.length).to.be.gte(1);",
+							"",
+							"    const first = response.data.geoData[0].location?.coordinates[1];",
+							"    const second = response.data.geoData[1].location?.coordinates[1];",
+							"",
+							"    pm.expect(first).to.be.lte(second);  ",
+							"});",
+							"pm.test(\"Results are sorted in descending order\", function() {",
+							"    const response = pm.response.json();",
+							"    pm.expect(response.data.geoData).to.be.an('array').that.is.not.empty;",
+							"    pm.expect(response.data.geoData.length).to.be.greaterThan(1);",
+							"",
+							"    const first = response.data.geoData[0].location?.coordinates[1]; ",
+							"    const second = response.data.geoData[1].location?.coordinates[1];",
+							"",
+							"    pm.expect(first).to.be.gte(second);  ",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/geo-data?lat=48.1920&lon=-114.3168&page=1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"geo-data"
+					],
+					"query": [
+						{
+							"key": "lat",
+							"value": "48.1920"
+						},
+						{
+							"key": "lon",
+							"value": "-114.3168"
+						},
+						{
+							"key": "page",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create New GeoData",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"location\": \"Kalispell, Montana\",\n  \"latitude\": 48.1920,\n  \"longitude\": -114.3168\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/geo-data/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"geo-data",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get All Geo Data",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Returned data matches the limit\", function() {",
+							"    const response = pm.response.json();",
+							"    pm.expect(response.data.length).to.eql(4); ",
+							"});",
+							"",
+							"",
+							"pm.test(\"Pagination works correctly\", function() {",
+							"    const response = pm.response.json();",
+							"    const page = 1;",
+							"    const limit = 4;",
+							"",
+							"    pm.expect(Number(response.page)).to.eql(page);",
+							"    pm.expect(Number(response.data.length)).to.eql(limit);",
+							"});",
+							"",
+							"pm.test(\"Results are sorted in ascending order\", function() {",
+							"    const response = pm.response.json();",
+							"    const first = response.data[0].location.coordinates[1];  ",
+							"    const second = response.data[0].location.coordinates[1];  ",
+							"",
+							"    pm.expect(first).to.be.lte(second);",
+							"});",
+							"",
+							"pm.test(\"Results are sorted in descending order\", function() {",
+							"    const response = pm.response.json();",
+							"    const first = response.data[0].location.coordinates[1];  ",
+							"    const second = response.data[0].location.coordinates[1];  ",
+							"",
+							"    pm.expect(first).to.be.gte(second); ",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/api/geo-data/all?minLat=10&maxLat=70&minLon=-180&maxLon=180&sortField=location.coordinates.0&sortOrder=asc&page=1&limit=10",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"geo-data",
+						"all"
+					],
+					"query": [
+						{
+							"key": "minLat",
+							"value": "10"
+						},
+						{
+							"key": "maxLat",
+							"value": "70"
+						},
+						{
+							"key": "minLon",
+							"value": "-180"
+						},
+						{
+							"key": "maxLon",
+							"value": "180"
+						},
+						{
+							"key": "sortField",
+							"value": "location.coordinates.0"
+						},
+						{
+							"key": "sortOrder",
+							"value": "asc"
+						},
+						{
+							"key": "page",
+							"value": "1"
+						},
+						{
+							"key": "limit",
+							"value": "10"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get by ID",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/api/geo-data/679849f4585718762fb75564",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"geo-data",
+						"679849f4585718762fb75564"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
